@@ -1,10 +1,20 @@
 from torchvision import datasets, transforms
+import torchvision
+from imshow import imshow
 import torch
 import os
 
-class Data():
-    def __init__(self, path:str) -> None:
+class Dataset():
+    def __init__(self, path:str, batch_size:int) -> None:
         self.data_dir = path
+        self.setImageDataset()
+        self.setDataLoader(batch_size)
+        self.setDatasetSize()
+        self.setClassName()
+        print("Data is loaded and there are {} classes: ".format(len(self.class_names)), end="")
+        for i in self.class_names:
+            print(i, end=" ")
+        print("")
 
     def setImageDataset(self) -> None:
         # Data augmentation and normalization for training
@@ -40,15 +50,11 @@ class Data():
     def setClassName(self) -> None:
         self.class_names = self.image_datasets['train'].classes
 
-def get_transforms(path:str, batchsize=4) -> torch.utils.data.DataLoader:
-    pwd = os.getcwd()
-    data = Data(pwd+path)
-    data.setImageDataset()
-    data.setDataLoader(batchsize)
-    data.setDatasetSize()
-    data.setClassName()
-    print("Data is loaded and there are {} classes: ".format(len(data.class_names)), end="")
-    for i in data.class_names:
-        print(i, end=" ")
-    print("")
-    return data
+    def sampleImages(self):
+        # Get a batch of training data
+        inputs, classes = next(iter(self.dataloaders['train']))
+
+        # Make a grid from batch
+        out = torchvision.utils.make_grid(inputs)
+        
+        imshow(out, title=[self.class_names[x] for x in classes], show=True)

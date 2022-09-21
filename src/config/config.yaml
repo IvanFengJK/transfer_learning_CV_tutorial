@@ -1,0 +1,14 @@
+dataset:
+  script_path: "../data"
+  batch_size: 4
+model_ft:
+  optimizer:
+    lr: 0.001
+    momentum: 0.99
+  lr_scheduler:
+    step_size: 7
+    gamma: 0.1
+train:
+  num_epochs: 5
+experiment:
+  num_sample_visual: 6
