@@ -5,6 +5,7 @@ import time
 import torch
 import matplotlib.pyplot as plt
 from imshow import imshow
+from tqdm import tqdm
 
 def train_model(model, criterion, optimizer, scheduler, dataloaders, device, dataset_sizes, num_epochs=25):
     since = time.time()
@@ -17,9 +18,9 @@ def train_model(model, criterion, optimizer, scheduler, dataloaders, device, dat
     patience = 4
     trigger = 0
 
-    for epoch in range(num_epochs):
-        print(f'Epoch {epoch}/{num_epochs - 1}')
-        print('-' * 10)
+    for epoch in tqdm(range(num_epochs)):
+        #print(f'Epoch {epoch}/{num_epochs - 1}')
+        #print('-' * 10)
 
         # Each epoch has a training and validation phase
         for phase in ['train', 'val']:
@@ -67,7 +68,7 @@ def train_model(model, criterion, optimizer, scheduler, dataloaders, device, dat
             else:
                 val_acc_hist.append(round(epoch_acc.item(), 4))
 
-            print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+            #print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
@@ -84,7 +85,7 @@ def train_model(model, criterion, optimizer, scheduler, dataloaders, device, dat
             print(trigger)
             print("Early Stopping triggered")
             break
-        print()
+        #print()
 
     time_elapsed = time.time() - since
     print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')

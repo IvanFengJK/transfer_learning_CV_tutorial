@@ -20,7 +20,8 @@ def visualiseList(train, val):
 
         # setting x and y axis range
         plt.xlim(0,len(train))
-        plt.ylim(min(min(y1),min(y2))-0.1,max(max(y1),max(y2))+0.1)
+        plt.ylim(0,1)
+        #plt.ylim(min(min(y1),min(y2))-0.1,max(max(y1),max(y2))+0.1)
 
         # naming the x axis
         plt.xlabel('Epoch')
