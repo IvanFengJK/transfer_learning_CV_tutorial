@@ -1,5 +1,5 @@
 dataset:
-  script_path: "../data"
+  script_path: "data"
   batch_size: 4
 model_ft:
   optimizer:

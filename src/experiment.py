@@ -1,7 +1,6 @@
 
 
 import copy
-from pyexpat import model
 import time
 import torch
 import matplotlib.pyplot as plt
@@ -12,15 +11,17 @@ from evaluation.common.metric import evaluation
 
 class Experiment():
     def __init__(self, model, data, device, num_epochs=25) -> None:
-        self.model = model.model
-        self.criterion = model.criterion
-        self.optimizer = model.optimizer
-        self.scheduler = model.lr_scheduler
+        self.model = model
         self.dataloaders = data.dataloaders
         self.device = device
         self.dataset_sizes = data.dataset_sizes
         self.class_names = data.class_names
         self.num_epochs = num_epochs
+
+    def setTrainer(self, criterion, optimizer, lr_scheduler):
+        self.criterion = criterion
+        self.optimizer = optimizer
+        self.scheduler = lr_scheduler
         
     def train_model(self):
         since = time.time()
@@ -62,6 +63,8 @@ class Experiment():
                         outputs = self.trained_model(inputs)
                         # Take the max of the prediction
                         _, preds = torch.max(outputs, 1)
+                        print(preds)
+                        print(torch.max(outputs, 1)[1])
                         # Calculate loss function base on criterion
                         loss = self.criterion(outputs, labels)
 

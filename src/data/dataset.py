@@ -5,10 +5,12 @@ import torch
 import os
 
 class Dataset():
-    def __init__(self, path:str, batch_size:int) -> None:
+    def __init__(self, cfg) -> None:
+        project_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        path =os.path.join(project_dir, cfg.dataset.script_path)
         self.data_dir = path
         self.setImageDataset()
-        self.setDataLoader(batch_size)
+        self.setDataLoader(cfg.dataset.batch_size)
         self.setDatasetSize()
         self.setClassName()
         print("Data is loaded and there are {} classes: ".format(len(self.class_names)), end="")
