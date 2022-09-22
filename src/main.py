@@ -8,33 +8,32 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
 
-### Loading Data Phase ###
-data = Dataset(cfg)
-# data.sampleImages()
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+if __name__ == "__main__":
+    ### Loading Data Phase ###
+    data = Dataset(cfg)
+    # data.sampleImages()
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-### Training by finetuning the convnet phase ###
-# Load pretrained model
-pretrained = models.resnet18(pretrained=True)
-model = modelArch(pretrained)
-model.setALL(False)
-model.setFC(True)
+    ### Training by finetuning the convnet phase ###
+    # Load pretrained model
+    pretrained = models.resnet18(pretrained=True)
+    model = modelArch(pretrained)
+    model.setChildren(cfg.model.num_children, False)
+    model.to(device)
+        
+    experiment = Experiment(model,
+                            data, 
+                            device, 
+                            num_epochs=cfg.train.num_epochs)
 
-experiment = Experiment(model,
-                        data, 
-                        device, 
-                        num_epochs=cfg.train.num_epochs)
+    # Function to calculate loss
+    criterion = nn.CrossEntropyLoss() 
+    # Observe that all parameters are being optimized
+    optimizer = optim.SGD(model.parameters(), lr=cfg.model.optimizer.lr, momentum=cfg.model.optimizer.momentum)
+    # Decay Learning rate by a factor of 0.1 every 7 epochs
+    scheduler = lr_scheduler.StepLR(optimizer, step_size=cfg.model.lr_scheduler.step_size, gamma=cfg.model.lr_scheduler.gamma)
 
-# Function to calculate loss
-criterion = nn.CrossEntropyLoss() 
-
-# Observe that all parameters are being optimized
-optimizer = optim.SGD(model.parameters(), lr=cfg.model_ft.optimizer.lr, momentum=cfg.model_ft.optimizer.momentum)
-
-# Decay Learning rate by a factor of 0.1 every 7 epochs
-scheduler = lr_scheduler.StepLR(optimizer, step_size=cfg.model_ft.lr_scheduler.step_size, gamma=cfg.model_ft.lr_scheduler.gamma)
-
-experiment.setTrainer(criterion, optimizer, scheduler)
-experiment.train_model()
-experiment.visualize_model(cfg.experiment.num_sample_visual)
-experiment.displayAccHist()
+    experiment.setTrainer(criterion, optimizer, scheduler)
+    experiment.train_model(cfg.experiment.patience)
+    experiment.visualize_model(cfg.experiment.num_sample_visual)
+    experiment.displayAccHist()

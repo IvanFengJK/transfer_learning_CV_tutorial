@@ -1,14 +1,16 @@
 dataset:
   script_path: "data"
-  batch_size: 4
-model_ft:
+  batch_size: 16
+model:
   optimizer:
     lr: 0.001
     momentum: 0.99
   lr_scheduler:
     step_size: 7
     gamma: 0.1
+  num_children: 9
 train:
-  num_epochs: 5
+  num_epochs: 20
 experiment:
   num_sample_visual: 6
+  patience: 4

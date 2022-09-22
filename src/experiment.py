@@ -1,5 +1,3 @@
-
-
 import copy
 import time
 import torch
@@ -23,16 +21,14 @@ class Experiment():
         self.optimizer = optimizer
         self.scheduler = lr_scheduler
         
-    def train_model(self):
+    def train_model(self, patience):
         since = time.time()
-
         # Make a copy of the model instead of a reference
         best_model_wts = copy.deepcopy(self.model.state_dict())
         self.trained_model = copy.deepcopy(self.model)
         best_acc = 0.0
         train_acc_hist = []
         val_acc_hist = []
-        patience = 4
         trigger = 0
         for epoch in tqdm(range(self.num_epochs)):
             """for epoch in range(num_epochs):
@@ -42,9 +38,9 @@ class Experiment():
             # Each epoch has a training and validation phase
             for phase in ['train', 'val']:
                 if phase == 'train':
-                    self.trained_model.train()  # Set model to training mode
+                    self.model.train()  # Set model to training mode
                 else:
-                    self.trained_model.eval()   # Set model to evaluate mode
+                    self.model.eval()   # Set model to evaluate mode
 
                 running_loss = 0.0
                 running_corrects = 0
@@ -60,13 +56,10 @@ class Experiment():
                     # forward
                     # track history if only in train
                     with torch.set_grad_enabled(phase == 'train'):
-                        outputs = self.trained_model(inputs)
-                        # Take the max of the prediction
-                        _, preds = torch.max(outputs, 1)
-                        print(preds)
-                        print(torch.max(outputs, 1)[1])
+                        output = self.model(inputs)
                         # Calculate loss function base on criterion
-                        loss = self.criterion(outputs, labels)
+                        _, preds = torch.max(output, 1)
+                        loss = self.criterion(output, labels)
 
                         # backward + optimize only if in training phase
                         if phase == 'train':
@@ -78,7 +71,6 @@ class Experiment():
                     running_corrects += torch.sum(preds == labels.data)
                 if phase == 'train':
                     self.scheduler.step()
-                    #print(scheduler.get_lr())
 
                 epoch_loss = running_loss / self.dataset_sizes[phase]
                 epoch_acc = running_corrects.double() / self.dataset_sizes[phase]
@@ -93,7 +85,7 @@ class Experiment():
                 # deep copy the model
                 if phase == 'val' and epoch_acc > best_acc:
                     best_acc = epoch_acc
-                    best_model_wts = copy.deepcopy(self.trained_model.state_dict())
+                    best_model_wts = copy.deepcopy(self.model.state_dict())
 
                 # My own early stopping
                 if phase == 'val' and len(val_acc_hist) > 1:
@@ -112,7 +104,7 @@ class Experiment():
         print(f'Best val Acc: {best_acc:4f}')
 
         # load best model weights
-        self.trained_model.load_state_dict(best_model_wts)
+        self.model.load_state_dict(best_model_wts)
         self.train_acc_hist= train_acc_hist
         self.val_acc_hist = val_acc_hist
 
