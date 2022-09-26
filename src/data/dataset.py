@@ -52,11 +52,12 @@ class Dataset():
     def setClassName(self) -> None:
         self.class_names = self.image_datasets['train'].classes
 
-    def sampleImages(self):
+    def sampleImages(self, writer):
         # Get a batch of training data
         inputs, classes = next(iter(self.dataloaders['train']))
 
         # Make a grid from batch
         out = torchvision.utils.make_grid(inputs)
         
-        imshow(out, title=[self.class_names[x] for x in classes], show=True)
+        fig = imshow(out, title=[self.class_names[x] for x in classes], show=True)
+        writer.add_figure('Sample Input Images', fig)

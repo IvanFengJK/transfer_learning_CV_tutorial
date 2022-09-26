@@ -1,8 +1,11 @@
+from textwrap import wrap
 import numpy as np
 import matplotlib.pyplot as plt
+import io
 
 def imshow(inp, title=None, show=False):
     """Imshow for Tensor."""
+    fig = plt.figure()
     inp = inp.numpy().transpose((1, 2, 0))
     mean = np.array([0.485, 0.456, 0.406])
     std = np.array([0.229, 0.224, 0.225])
@@ -10,7 +13,6 @@ def imshow(inp, title=None, show=False):
     inp = np.clip(inp, 0, 1)
     plt.imshow(inp)
     if title is not None:
-        plt.title(title)
+        plt.title(title, wrap = True)
     plt.pause(0.001)  # pause a bit so that plots are updated
-    if show:
-        plt.show()
+    return fig

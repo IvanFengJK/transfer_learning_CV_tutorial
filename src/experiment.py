@@ -6,6 +6,7 @@ from imshow import imshow
 from tqdm import tqdm
 from evaluation.visualize import visualiseList
 from evaluation.common.metric import evaluation
+import torchvision
 
 class Experiment():
     def __init__(self, model, data, device, num_epochs=25) -> None:
@@ -21,7 +22,7 @@ class Experiment():
         self.optimizer = optimizer
         self.scheduler = lr_scheduler
         
-    def train_model(self, patience):
+    def train_model(self, patience, writer):
         since = time.time()
         # Make a copy of the model instead of a reference
         best_model_wts = copy.deepcopy(self.model.state_dict())
@@ -31,9 +32,6 @@ class Experiment():
         val_acc_hist = []
         trigger = 0
         for epoch in tqdm(range(self.num_epochs)):
-            """for epoch in range(num_epochs):
-            print(f'Epoch {epoch}/{num_epochs - 1}')
-            print('-' * 10)"""
 
             # Each epoch has a training and validation phase
             for phase in ['train', 'val']:
@@ -75,12 +73,11 @@ class Experiment():
                 epoch_loss = running_loss / self.dataset_sizes[phase]
                 epoch_acc = running_corrects.double() / self.dataset_sizes[phase]
 
-                if phase == 'train':
-                    train_acc_hist.append(round(epoch_acc.item(),4))
-                else:
-                    val_acc_hist.append(round(epoch_acc.item(), 4))
+                writer.add_scalars('loss', {phase: round(epoch_loss,4)}, epoch)
+                writer.add_scalars('accuracy', {phase: round(epoch_acc.item(),4)}, epoch)
 
-                #print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+                
+                # print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
                 # deep copy the model
                 if phase == 'val' and epoch_acc > best_acc:
@@ -97,7 +94,6 @@ class Experiment():
                 print(trigger)
                 print("Early Stopping triggered")
                 break
-            #print()
 
         time_elapsed = time.time() - since
         print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
@@ -109,7 +105,7 @@ class Experiment():
         self.val_acc_hist = val_acc_hist
 
 
-    def visualize_model(self, num_images):
+    def visualize_model(self, num_images, writer):
         was_training = self.model.training
         self.model.eval()
         images_so_far = 0
@@ -127,12 +123,10 @@ class Experiment():
                     images_so_far += 1
                     ax = plt.subplot(num_images//2, 2, images_so_far)
                     ax.axis('off')
-                    ax.set_title(f'predicted: {self.class_names[preds[j]]}')
-                    imshow(inputs.cpu().data[j])
-
+                    fig = imshow(inputs.cpu().data[j], f'predicted: {self.class_names[preds[j]]}')
+                    writer.add_figure(f'Sample Output Image {j}', fig)
                     if images_so_far == num_images:
                         self.model.train(mode=was_training)
-                        plt.show()
                         return
             self.model.train(mode=was_training)
 
