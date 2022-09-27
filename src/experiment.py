@@ -30,6 +30,10 @@ class Experiment():
         best_acc = 0.0
         train_acc_hist = []
         val_acc_hist = []
+        train_loss_hist = []
+        val_loss_hist = []
+        loss_hist = []
+        acc_hist = []
         trigger = 0
         for epoch in tqdm(range(self.num_epochs)):
 
@@ -67,16 +71,23 @@ class Experiment():
                     # statistics
                     running_loss += loss.item() * inputs.size(0)
                     running_corrects += torch.sum(preds == labels.data)
-                if phase == 'train':
-                    self.scheduler.step()
-
+                
                 epoch_loss = running_loss / self.dataset_sizes[phase]
                 epoch_acc = running_corrects.double() / self.dataset_sizes[phase]
 
                 writer.add_scalars('loss', {phase: round(epoch_loss,4)}, epoch)
                 writer.add_scalars('accuracy', {phase: round(epoch_acc.item(),4)}, epoch)
+                loss_hist.append({phase: round(epoch_loss,4)})
+                acc_hist.append({phase: round(epoch_acc.item(),4)})
 
-                
+                if phase == 'train':
+                    self.scheduler.step()
+                    train_acc_hist.append(epoch_acc)
+                    train_loss_hist.append(epoch_loss)
+                else:
+                    val_acc_hist.append(epoch_acc)
+                    val_loss_hist.append(epoch_loss)
+
                 # print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
                 # deep copy the model
@@ -103,7 +114,10 @@ class Experiment():
         self.model.load_state_dict(best_model_wts)
         self.train_acc_hist= train_acc_hist
         self.val_acc_hist = val_acc_hist
-
+        self.train_loss_hist = train_loss_hist
+        self.val_loss_hist = val_loss_hist
+        self.loss = loss_hist
+        self.acc = acc_hist
 
     def visualize_model(self, num_images, writer):
         was_training = self.model.training
