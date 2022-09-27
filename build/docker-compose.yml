@@ -1,17 +1,24 @@
 version: "3.8"
 
 services: 
+
   tl:
     build: .. # Specify where to find the Dockfile
-    container_name: pytorch_tensorboard # Name of container
+    container_name: pytorch # Name of container
     stdin_open: true # Keep STDIN open
     tty: true # Allocate a pseudo-TTY
     shm_size: 8gb # Increase Ram
     ports: 
-      - 6006:6006 # Port mapping hostPort:containerPort
+      - 8888:8888 # Port mapping hostPort:containerPort
     volumes:
       - ../data:/data # Volume Mapping hostDir:containerDir
       - ../src:/src
 
   tb:
-    image: tensorflow:tensorflow
+    image: tensorflow/tensorflow
+    container_name: tensorboard
+    ports:
+      - 6006:6006 # Port mapping hostPort:containerPort
+    volumes:
+      - ../src/runs:/runs
+    command: tensorboard --bind_all --logdir=runs
