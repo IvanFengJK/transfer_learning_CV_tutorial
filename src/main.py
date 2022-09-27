@@ -9,9 +9,7 @@ from models.tl_arch import modelArch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
-import PIL.Image
-from torchvision.transforms import ToTensor
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 if __name__ == "__main__":
     ### Loading Data Phase ###
