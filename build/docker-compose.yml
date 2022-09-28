@@ -13,7 +13,7 @@ services:
       - ../src:/src
 
   tb:
-    image: pytorch/pytorch
+    image: tensorflow/tensorflow
     container_name: tensorboard
     stdin_open: true # Keep STDIN open
     tty: true # Allocate a pseudo-TTY
@@ -23,7 +23,5 @@ services:
       - ../flask:/flask
     depends_on:
       - tl
-    command: bash -c "
-      cd flask
-      "
+    command: bash -c "pip install torch && pip install Flask && cd flask && flask run --host=0.0.0.0"
      

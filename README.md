@@ -72,3 +72,21 @@ Project Organization
 --------
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+
+To run project, you need to have the docker extension:
+```bash
+$ cd build
+$ docker-compose up
+```
+
+Attach the shell from container tl:
+```bash
+$ python3 main.py
+```
+
+Attach the shell from container tb:
+```bash
+$ tensorboard --bind_all --logdir=runs
+```
+
+Open your browser and type `localhost:6006`. This might take a while to load but you will see the training graph now
