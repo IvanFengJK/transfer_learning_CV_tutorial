@@ -1,7 +1,5 @@
-import json
 from flask import Flask, request
 from torch.utils.tensorboard import SummaryWriter
-import datetime
 
 app = Flask(__name__)
 
@@ -9,7 +7,7 @@ app = Flask(__name__)
 def received_data():
     json = request.get_json()
     for writer_name, data in json.items():
-        writer = SummaryWriter(writer_name + "new")
+        writer = SummaryWriter("../" + writer_name)
         for key, hist in data.items():
             count = 0
             for idx, event in enumerate(hist):

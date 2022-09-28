@@ -3,3 +3,7 @@ contourpy==1.0.5
 fonttools==4.37.3
 Pillow==9.2.0
 seaborn==0.12.0
+itsdangerous==2.1.2
+Jinja2==3.1.2
+Flask==2.2.2
+click==8.1.3

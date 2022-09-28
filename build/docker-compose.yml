@@ -8,17 +8,22 @@ services:
     stdin_open: true # Keep STDIN open
     tty: true # Allocate a pseudo-TTY
     shm_size: 8gb # Increase Ram
-    ports: 
-      - 8888:8888 # Port mapping hostPort:containerPort
     volumes:
       - ../data:/data # Volume Mapping hostDir:containerDir
       - ../src:/src
 
   tb:
-    image: tensorflow/tensorflow
+    image: pytorch/pytorch
     container_name: tensorboard
+    stdin_open: true # Keep STDIN open
+    tty: true # Allocate a pseudo-TTY
     ports:
       - 6006:6006 # Port mapping hostPort:containerPort
     volumes:
-      - ../src/runs:/runs
-    command: tensorboard --bind_all --logdir=runs
+      - ../flask:/flask
+    depends_on:
+      - tl
+    command: bash -c "
+      cd flask
+      "
+     

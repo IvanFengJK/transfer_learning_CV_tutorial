@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     experiment.setTrainer(criterion, optimizer, scheduler)
     experiment.train_model(cfg.experiment.patience, writer)
-    requests.post("http://127.0.0.1:5000/", json={time: {"loss": experiment.loss}} )
-    requests.post("http://127.0.0.1:5000/", json={time: {"accuracy": experiment.acc}} )
+    requests.post("http://tb:5000/", json={time: {"loss": experiment.loss}} )
+    requests.post("http://tb:5000/", json={time: {"accuracy": experiment.acc}} )
     experiment.visualize_model(cfg.experiment.num_sample_visual, writer)
     writer.close()
